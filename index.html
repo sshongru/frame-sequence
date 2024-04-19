@@ -114,6 +114,7 @@
 </style>
 
 <script>
+  let timeOffset = 0;
   let video;
   let fileInput;
   let previewWidthSlider;
@@ -195,7 +196,7 @@
         keyframeElement.classList.add('keyframe');
         let timestampElement = document.createElement('div');
         timestampElement.classList.add('timestamp');
-        timestampElement.innerHTML = `<i>${timeUnitString}</i> ` + keyframe.timestamp + 's';
+        timestampElement.innerHTML = `<i>${timeUnitString}</i> ` + getTimestamp(keyframe.timestamp) + 's';
         let timeSincePreviousElement = document.createElement('div');
         timeSincePreviousElement.classList.add('timeSincePrevious');
         timeSincePreviousElement.innerText = `${deltaUnitString} ` + timeSincePrevious;
@@ -227,6 +228,15 @@
     }
     // a must be equal to b
     return 0;
+  }
+
+  function getTimestamp(timestamp){
+    return (timestamp - timeOffset).toFixed(2);
+  }
+
+  function setTimeOffset(event){
+    timeOffset = parseFloat(event.target.value);
+    refreshKeyFrameList();
   }
 
   function advanceVideo(t) {
@@ -296,9 +306,18 @@
   <div>
     <button onclick="advanceVideo(-0.1)">- 0.1</button>
     <button onclick="advanceVideo(-0.01)">- 0.01</button>
-    <button id="capture" onclick="captureKeyFrame()">Capture Key Frame</button>
+    <button id="capture" onclick="captureKeyFrame()">Capture Frame</button>
     <button onclick="advanceVideo(0.01)">+ 0.01</button>
     <button onclick="advanceVideo(0.1)">+ 0.1</button>
+  </div>
+  <div>
+    <details>
+      <summary>Time Offset</summary>
+      <div style="width:200px;margin:auto">
+       <p>By default <code>t=0</code> will represent the start of the video file. But sometimes you may have a video that has a large amount of unrelevant content at the start before getting to the interesting part. In that case you can use the following number input to set <code>t=0</code> to a later time within the video:</p>
+        <input type="number" oninput="setTimeOffset(event)" value="0.00" style="width:70px">
+      </div>
+    </details>
   </div>
 </div>
 <div class="divider"></div>
