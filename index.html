@@ -111,6 +111,36 @@
     color: #333;
 
   }
+
+  summary {
+    cursor: pointer;
+  }
+
+  .stepIndex {
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    margin: 5px;
+  }
+
+  div.LabelStyleSteps {
+    display: none;
+  }
+
+  body.LabelStyleTimestamps .LabelStyleSteps {
+    display: none;
+  }
+  body.LabelStyleSteps .LabelStyleTimestamps {
+    display: none;
+  }
+  body.LabelStyleSteps .LabelStyleSteps {
+    display: block;
+  }
+  body.LabelStyleNone .LabelStyleTimestamps,
+  body.LabelStyleNone .LabelStyleSteps {
+    display: none;
+  }
+
 </style>
 
 <script>
@@ -121,6 +151,7 @@
   let frameWidthSlider;
   let keyframeTimes = []; // Array to store keyframe times
   let keyframes = [];
+  const labelStylePrefix = 'LabelStyle';
 
   window.onload = function() {
     fileInput = document.getElementById('video-file');
@@ -192,6 +223,13 @@
         img.src = keyframe.canvas.toDataURL('image/png');
         img.addEventListener('click', createCursorDiv);
 
+        let timeGroup = document.createElement('div');
+        timeGroup.classList.add(labelStylePrefix + 'Timestamps');
+
+        let stepsGroup = document.createElement('div');
+        stepsGroup.classList.add(labelStylePrefix + 'Steps');
+        stepsGroup.innerHTML = `<div class="stepIndex">${i}</div>`;
+
         let keyframeElement = document.createElement('div');
         keyframeElement.classList.add('keyframe');
         let timestampElement = document.createElement('div');
@@ -211,8 +249,12 @@
         imgDiv.classList.add('imgHolder');
         imgDiv.appendChild(img);
 
-        keyframeElement.appendChild(timestampElement);
-        keyframeElement.appendChild(timeSincePreviousElement);
+        timeGroup.appendChild(timestampElement);
+        timeGroup.appendChild(timeSincePreviousElement);
+
+
+        keyframeElement.appendChild(stepsGroup);
+        keyframeElement.appendChild(timeGroup);
         keyframeElement.appendChild(imgDiv);
         keyframeElement.appendChild(descriptionElement);
       
@@ -290,6 +332,12 @@
     // update the ".keyframe" CSS rule with the chosen size
     [...document.styleSheets[0].cssRules].find(x => x.selectorText == '.keyframe').style.width = frameWidthSlider.value + 'px';
   }
+
+  function toggleTimestamps(event){
+    const children = Array.from(event.target.children);
+    children.forEach((child) => {document.body.classList.remove(labelStylePrefix + child.value)});
+    document.body.classList.add(labelStylePrefix + event.target.value);
+  }
 </script>
 </head>
 <body>
@@ -316,6 +364,17 @@
       <div style="width:200px;margin:auto">
        <p>By default <code>t=0</code> will represent the start of the video file. But sometimes you may have a video that has a large amount of unrelevant content at the start before getting to the interesting part. In that case you can use the following number input to set <code>t=0</code> to a later time within the video:</p>
         <input type="number" oninput="setTimeOffset(event)" value="0.00" style="width:70px">
+      </div>
+    </details>
+    <details>
+      <summary>Label Style</summary>
+      <div style="width:200px;margin:auto">
+       <p>This tool can also be helpful to show steps to reproduce in a sequence where the timestamp and delta information is not relevant or helpful. You can choose a more appropriate label style here:</p>
+        <select oninput="toggleTimestamps(event)">
+          <option value="Timestamps">Timestamps</option>
+          <option value="Steps">Steps</option>
+          <option value="None">None</option>
+        </select>
       </div>
     </details>
   </div>
