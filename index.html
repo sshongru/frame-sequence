@@ -144,6 +144,7 @@
 </style>
 
 <script>
+
   let timeOffset = 0;
   let video;
   let fileInput;
@@ -160,6 +161,11 @@
     previewWidthSlider = document.getElementById('previewWidthSlider');
     frameWidthSlider = document.getElementById('frameWidthSlider');
   };
+  window.onbeforeunload = function() { 
+    if (keyframes.length > 0){
+      return "Leaving the page will lose your work";  
+    }
+  }
 
   function loadVideo() {
     const file = fileInput.files[0];
